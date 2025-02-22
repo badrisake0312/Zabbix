@@ -1,0 +1,69 @@
+Zabbix version-7.2
+OS Distribution-Ubuntu
+OS Version-24.04 Noble(amd64, arm64)
+ZABBIX COMPONENT-Server, Frontend, Agent
+Database-MySQL
+Web Server-Apache
+
+sudo -s
+cat /etc/os-release
+wget https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.2+ubuntu24.04_all.deb
+dpkg -i zabbix-release_latest_7.2+ubuntu24.04_all.deb
+apt update
+apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+apt install mysql-server
+passwd
+New password:admin
+Retype new password:
+passwd: password updated successfully
+mysql -uroot -p
+----------------------------------
+Execute below command's in MySQL
+----------------------------------
+create database zabbix character set utf8mb4 collate utf8mb4_bin;
+create user zabbix@localhost identified by 'admin';
+grant all privileges on zabbix.* to zabbix@localhost;
+set global log_bin_trust_function_creators = 1;
+quit;
+-----------------------------------
+ctrl+L - to clear the screen
+zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p Zabbix
+mysql -uroot -p
+---------------------------------
+Execute below command's in MySQL
+---------------------------------
+set global log_bin_trust_function_creators = 0;
+quit;
+----------------------------------
+vi /etc/zabbix/zabbix_server.conf
+DBPassword=admin
+systemctl restart zabbix-server zabbix-agent apache2
+systemctl enable zabbix-server zabbix-agent apache2
+systemctl status zabbix-server zabbix-agent apache2
+
+54.145.105.201:80/Zabbix
+Username-Admin
+Password-Zabbix
+
+Zabbix-Agent Port- 10050
+
+--------------------------
+Zabbix-Agent-Installation in Remote server's
+--------------------------
+sudo su - root
+apt-get update
+sudo apt search Zabbix
+
+wget https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.2+ubuntu24.04_all.deb
+dpkg -i zabbix-release_latest_7.2+ubuntu24.04_all.deb
+apt update
+apt-get install zabbix-agent
+zabbix_agentd -V ---Check the Zabbix Agent version
+vi /etc/zabbix/zabbix_agentd.conf
+Passive check related
+Active checkes related
+Server=54.145.105.201
+sudo /etc/init.d/zabbix-agent restart
+sudo systemctl status zabbix-agent.service
+
+
